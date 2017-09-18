@@ -1,0 +1,114 @@
+section {
+    margin-top: 10px;
+}
+
+.save-path {
+    width: 100%;
+}
+
+.input_path {
+    margin-left: -50px;
+    width: 100%;
+}
+
+.select_button {
+    width: 70px;
+}
+
+.progressBar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    outline: none;
+
+    padding: 20px;
+    margin: 20px;
+
+    height: 40px;
+}
+
+.progressBg {
+    margin: auto;
+    width: 92%;
+    height: 100%;
+    border: 4px solid #888888;
+}
+
+.progressTips {
+    position: absolute;
+    font-size: 18px;
+    line-height: 20px;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    color: white;
+}
+
+.exists_tips {
+    color: white;
+}
+
+.btn_reImport .btn_again {
+    position: absolute;
+    margin: auto;
+    width: 78%;
+    height: 40px;
+    font-size: 15px;
+}
+
+.tips {
+    position: absolute;
+    margin-top: 45px;
+    font-size: 12px;
+}
+
+ui-drop-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    outline: none;
+
+    padding: 15px;
+    margin: 15px;
+
+    border: 5px dotted #888888;
+
+    color: #888;
+    font-size: 26px;
+    font-weight: bold;
+
+    height: 60px;
+}
+
+ui-drop-area[drag-hovering] {
+    border-color: #00ff00;
+    color: #00ff00;
+}
+
+/*这里用于表示存有资源的状态表现*/
+ui-drop-area[exists] {
+    border: 4px solid #888888;
+    color: #888888;
+}
+
+.drag {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    outline: none;
+
+    width: 100%;
+
+    margin: 15px;
+
+    color: black;
+    font-weight: bold;
+
+}

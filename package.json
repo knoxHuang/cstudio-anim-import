@@ -1,0 +1,31 @@
+{
+  "name": "cstudio-anim-import",
+  "version": "0.0.1",
+  "description": "Studio 1.6 animation format import tool",
+  "author": "Cocos Creator",
+  "main": "main.js",
+  "scene-script": "scene-walker.js",
+  "main-menu": {
+    "i18n:MAIN_MENU.file.title/i18n:cstudio-anim-import.MAIN_MENU.frames": {
+      "message": "cstudio-anim-import:open"
+    }
+  },
+  "panel": {
+    "main": "panel/index.js",
+    "type": "dockable",
+    "title": "i18n:cstudio-anim-import.PANEL.title",
+    "width": 500,
+    "min-width": 500,
+    "max-width": 500,
+    "height": 170,
+    "min-height": 170,
+    "max-height": 171,
+
+    "profiles": {
+      "local": {
+        "dragItems": [],
+        "save-path": ""
+      }
+    }
+  }
+}

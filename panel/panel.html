@@ -1,0 +1,41 @@
+<div>
+    <section>
+        <div class="layout vertical content">
+
+            <ui-prop class="layout horizontal content center-justified save-path"
+                name="{{T('cstudio-anim-import.PANEL.save_path')}}">
+                <ui-input class="input_path" empty v-value="savePath"></ui-input>
+                <ui-button class="select_button blue" v-on:confirm="onChooseSavePath">
+                    {{T('cstudio-anim-import.PANEL.button_select')}}
+                </ui-button>
+
+                <ui-button class="select_button blue"
+                           v-disabled="_getResetDisable()"
+                           v-on:confirm="onReset">
+                    {{btnResetStr}}
+                </ui-button>
+
+                <p style="width: 15px"></p>
+            </ui-prop>
+
+            <ui-drop-area v-show="!imported" droppable="file" multi :exists="exists"
+                          v-on:click="onImport"
+                          v-on:drop-area-accept="onDragEnd">
+                <div v-show="!exists"> {{T('cstudio-anim-import.PANEL.drag_tips')}} </div>
+                <div class="exists_tips" v-show="exists"> {{T('cstudio-anim-import.PANEL.exists_tips')}} </div>
+            </ui-drop-area>
+
+            <div v-show="imported" class="progressBar">
+                <ui-progress class="bule progressBg" v-value="progress"></ui-progress>
+                <div class="progressTips">
+                    <span> {{progressTips}} </span>
+                </div>
+                <ui-button class="btn_reImport" v-show="hasError" v-on:confirm="onReImport">
+                    {{T('cstudio-anim-import.PANEL.button_reImport')}}
+                </ui-button>
+
+                <ui-hint class="tips top red" v-show="hasError"> {{tips}} </ui-hint>
+            </div>
+        </div>
+    </section>
+</div>
