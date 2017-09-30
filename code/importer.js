@@ -104,7 +104,14 @@ function _decodeBone (bone_data, cb) {
         function (whileCb) {
             let bData = bone_data[index];
             let name = bData['name'];
-            LayerList.push(name);
+            let scaleX = bData['cX'];
+            let scaleY = bData['cY'];
+            // Layer info
+            LayerList.push({
+                name: name,
+                scaleX: scaleX,
+                scaleY: scaleY,
+            });
             let display_data = bData['display_data'];
             if (!display_data) {
                 return _sendErrorMessage('display_data is null');
@@ -568,7 +575,8 @@ function _imports (exportJsonData, destPath, callback) {
             let animComp = rootNode.addComponent(cc.Animation);
             for (let i = 0; i < LayerList.length; ++i) {
                 let layer = LayerList[i];
-                let childNode = new cc.Node(layer);
+                let childNode = new cc.Node(layer.name);
+                childNode.setScale(layer.scaleX, layer.scaleY);
                 let spriteComp = childNode.addComponent(cc.Sprite);
                 spriteComp.sizeMode = cc.Sprite.SizeMode.RAW;
                 spriteComp.trim = false;
