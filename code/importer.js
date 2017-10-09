@@ -106,11 +106,15 @@ function _decodeBone (bone_data, cb) {
             let name = bData['name'];
             let scaleX = bData['cX'];
             let scaleY = bData['cY'];
+            let rotationX = cc.radiansToDegrees(parseFloat(bData['kX']));
+            let rotationY = cc.radiansToDegrees(parseFloat(bData['kY']));
             // Layer info
             LayerList.push({
                 name: name,
                 scaleX: scaleX,
                 scaleY: scaleY,
+                rotationX: rotationX,
+                rotationY: rotationY,
             });
             let display_data = bData['display_data'];
             if (!display_data) {
@@ -577,6 +581,7 @@ function _imports (exportJsonData, destPath, callback) {
                 let layer = LayerList[i];
                 let childNode = new cc.Node(layer.name);
                 childNode.setScale(layer.scaleX, layer.scaleY);
+                childNode.setRotation(layer.rotationX);
                 let spriteComp = childNode.addComponent(cc.Sprite);
                 spriteComp.sizeMode = cc.Sprite.SizeMode.RAW;
                 spriteComp.trim = false;
