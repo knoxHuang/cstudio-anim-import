@@ -104,6 +104,8 @@ function _decodeBone (bone_data, cb) {
         function (whileCb) {
             let bData = bone_data[index];
             let name = bData['name'];
+            let x = bData['x'];
+            let y = bData['y'];
             let scaleX = bData['cX'];
             let scaleY = bData['cY'];
             let rotationX = cc.radiansToDegrees(parseFloat(bData['kX']));
@@ -111,6 +113,8 @@ function _decodeBone (bone_data, cb) {
             // Layer info
             LayerList.push({
                 name: name,
+                x: x,
+                y: y,
                 scaleX: scaleX,
                 scaleY: scaleY,
                 rotationX: rotationX,
@@ -580,6 +584,7 @@ function _imports (exportJsonData, destPath, callback) {
             for (let i = 0; i < LayerList.length; ++i) {
                 let layer = LayerList[i];
                 let childNode = new cc.Node(layer.name);
+                childNode.setPosition(layer.x, layer.y);
                 childNode.setScale(layer.scaleX, layer.scaleY);
                 childNode.setRotation(layer.rotationX);
                 let spriteComp = childNode.addComponent(cc.Sprite);
