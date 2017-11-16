@@ -16,7 +16,6 @@ function showImportMessageBox (title, message, callback) {
         noLink: true
     };
     let cb = (result) => {
-        // result = 0 ÊÇ£¬1 = ·ñ
         callback && callback(null, result === 0);
     };
     Dialog.showMessageBox(boxInfo, cb);

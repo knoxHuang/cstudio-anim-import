@@ -168,6 +168,7 @@ function _decodeFrameData (mov_bone_data, sample, cb) {
     let props = {};
     let xFrames = [];
     let yFrames = [];
+    let rotations = [];
     let hasAddOpacity = false;
     for (let i = 0, l = frame_data.length; i < l; i++) {
         let data = frame_data[i];
@@ -181,6 +182,9 @@ function _decodeFrameData (mov_bone_data, sample, cb) {
         };
         _addPropFrames(i, frame, data['x'], xFrames);
         _addPropFrames(i, frame, data['y'], yFrames);
+
+        let rotation = cc.radiansToDegrees(parseFloat(data['kX']));
+        _addPropFrames(i, frame, rotation, rotations);
         let tempColor = data['color'];
         if (tempColor) {
             // color
@@ -214,6 +218,9 @@ function _decodeFrameData (mov_bone_data, sample, cb) {
     }
     if (Object.keys(yFrames).length > 1) {
         props.y = yFrames;
+    }
+    if (Object.keys(rotations).length > 1) {
+        props.rotation = rotations;
     }
     if (Object.keys(colors).length > 1) {
         props.color = colors;
