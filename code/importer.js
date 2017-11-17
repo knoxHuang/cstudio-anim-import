@@ -77,14 +77,26 @@ function _getSpriteFrameByDisplayIndex (name, displayIndx) {
     return null;
 }
 
-function _decodeDisplayData (name, display_data, cb) {
+function _decodeDisplayData (name, display_data, layerInfo, cb) {
     let len = display_data.length;
     if (len > 0) {
         DISPLAY_DATA[name] = [];
         for (let i = 0; i < len; ++i) {
             let data = display_data[i];
             // display name;
-            DISPLAY_DATA[name].push(data['name']);
+            let dpName = data['name'];
+            DISPLAY_DATA[name].push(dpName);
+            let uuid = SPRITEFRAME_ATLAS[dpName];
+            if (uuid) {
+                cc.AssetLibrary.loadAsset(uuid, (err, spriteFrame) => {
+                    if (err) {
+                        Editor.error(err);
+                    }
+                    else {
+                        layerInfo.defaultSpriteFrame = spriteFrame;
+                    }
+                });
+            }
             if (i === len - 1) {
                 cb();
             }
@@ -111,7 +123,7 @@ function _decodeBone (bone_data, cb) {
             let rotationX = cc.radiansToDegrees(parseFloat(bData['kX']));
             let rotationY = cc.radiansToDegrees(parseFloat(bData['kY']));
             // Layer info
-            LayerList.push({
+            let layerInfo = {
                 name: name,
                 x: x,
                 y: y,
@@ -119,12 +131,14 @@ function _decodeBone (bone_data, cb) {
                 scaleY: scaleY,
                 rotationX: rotationX,
                 rotationY: rotationY,
-            });
+                defaultSpriteFrame: null,
+            };
+            LayerList.push(layerInfo);
             let display_data = bData['display_data'];
             if (!display_data) {
                 return _sendErrorMessage('display_data is null');
             }
-            _decodeDisplayData(name, display_data, () => {
+            _decodeDisplayData(name, display_data, layerInfo, () => {
                 index++;
                 whileCb();
             });
@@ -595,6 +609,10 @@ function _imports (exportJsonData, destPath, callback) {
                 childNode.setScale(layer.scaleX, layer.scaleY);
                 childNode.setRotation(layer.rotationX);
                 let spriteComp = childNode.addComponent(cc.Sprite);
+                if (layer.defaultSpriteFrame) {
+                    cc.log(layer.defaultSpriteFrame);
+                    spriteComp.spriteFrame = layer.defaultSpriteFrame;
+                }
                 spriteComp.sizeMode = cc.Sprite.SizeMode.RAW;
                 spriteComp.trim = false;
                 childNode.parent = rootNode;
