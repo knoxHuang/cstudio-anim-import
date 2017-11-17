@@ -179,11 +179,13 @@ function _decodeFrameData (mov_bone_data, sample, cb) {
     let frames = [];
     let colors = [];
     let opacitys = [];
+    let hasAddOpacity = false;
     let props = {};
     let xFrames = [];
     let yFrames = [];
     let rotations = [];
-    let hasAddOpacity = false;
+    let scaleXs = [];
+    let scaleYs = [];
     for (let i = 0, l = frame_data.length; i < l; i++) {
         let data = frame_data[i];
         let frame = (data['fi'] / sample);
@@ -196,6 +198,8 @@ function _decodeFrameData (mov_bone_data, sample, cb) {
         };
         _addPropFrames(i, frame, data['x'], xFrames);
         _addPropFrames(i, frame, data['y'], yFrames);
+        _addPropFrames(i, frame, data['cX'], scaleXs);
+        _addPropFrames(i, frame, data['cY'], scaleYs);
 
         let rotation = cc.radiansToDegrees(parseFloat(data['kX']));
         _addPropFrames(i, frame, rotation, rotations);
@@ -232,6 +236,12 @@ function _decodeFrameData (mov_bone_data, sample, cb) {
     }
     if (Object.keys(yFrames).length > 1) {
         props.y = yFrames;
+    }
+    if (Object.keys(scaleXs).length > 1) {
+        props.scaleX = scaleXs;
+    }
+    if (Object.keys(scaleYs).length > 1) {
+        props.scaleY = scaleYs;
     }
     if (Object.keys(rotations).length > 1) {
         props.rotation = rotations;
