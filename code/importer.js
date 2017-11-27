@@ -133,7 +133,7 @@ function _decodeBone (bone_data, cb) {
                 rotationY: rotationY,
                 defaultSpriteFrame: null,
             };
-            LayerList.push(layerInfo);
+            LayerList[name] = layerInfo;
             let display_data = bData['display_data'];
             if (!display_data) {
                 return _sendErrorMessage('display_data is null');
@@ -169,7 +169,7 @@ function _addPropFrames (idx, frame, value, propFrams) {
     }
 }
 
-function _decodeFrameData (mov_bone_data, sample, cb) {
+function _decodeFrameData (mov_bone_data, sample, layerInfo, cb) {
     let curve_data = {};
     let name = mov_bone_data['name'];
     let frame_data = mov_bone_data['frame_data'];
@@ -196,10 +196,14 @@ function _decodeFrameData (mov_bone_data, sample, cb) {
             frame: frame,
             value: _getSpriteFrameByDisplayIndex(name, data['dI']),
         };
-        _addPropFrames(i, frame, data['x'], xFrames);
-        _addPropFrames(i, frame, data['y'], yFrames);
-        _addPropFrames(i, frame, data['cX'], scaleXs);
-        _addPropFrames(i, frame, data['cY'], scaleYs);
+        let x = data['x'] + layerInfo.x;
+        _addPropFrames(i, frame, x, xFrames);
+        let y = data['y'] + layerInfo.y;
+        _addPropFrames(i, frame, y, yFrames);
+        let cX = data['cX'] * layerInfo.scaleX;
+        _addPropFrames(i, frame, cX, scaleXs);
+        let cY = data['cY'] * layerInfo.scaleY;
+        _addPropFrames(i, frame, cY, scaleYs);
 
         let rotation = cc.radiansToDegrees(parseFloat(data['kX']));
         _addPropFrames(i, frame, rotation, rotations);
@@ -290,7 +294,8 @@ function _decodeMovBoneData (mov_data, cb) {
         },
         function (whileCb) {
             let movboneData = mov_bone_data[index];
-            _decodeFrameData(movboneData, animClip.sample, (name, curveData) => {
+            let mov_bone_name = movboneData['name'];
+            _decodeFrameData(movboneData, animClip.sample, LayerList[mov_bone_name], (name, curveData) => {
                 node_curve_data[name] = curveData;
                 index++;
                 whileCb();
@@ -612,15 +617,14 @@ function _imports (exportJsonData, destPath, callback) {
             _sendProgressMessage('create ' + exportJsonData.baseName + ' prefab');
             let rootNode = new cc.Node(PREFAB_NAME);
             let animComp = rootNode.addComponent(cc.Animation);
-            for (let i = 0; i < LayerList.length; ++i) {
-                let layer = LayerList[i];
+            for (let key in LayerList) {
+                let layer = LayerList[key];
                 let childNode = new cc.Node(layer.name);
                 childNode.setPosition(layer.x, layer.y);
                 childNode.setScale(layer.scaleX, layer.scaleY);
                 childNode.setRotation(layer.rotationX);
                 let spriteComp = childNode.addComponent(cc.Sprite);
                 if (layer.defaultSpriteFrame) {
-                    cc.log(layer.defaultSpriteFrame);
                     spriteComp.spriteFrame = layer.defaultSpriteFrame;
                 }
                 spriteComp.sizeMode = cc.Sprite.SizeMode.RAW;
