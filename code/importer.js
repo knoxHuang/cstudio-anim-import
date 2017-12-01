@@ -116,21 +116,17 @@ function _decodeBone (bone_data, cb) {
         function (whileCb) {
             let bData = bone_data[index];
             let name = bData['name'];
-            let x = bData['x'];
-            let y = bData['y'];
-            let scaleX = bData['cX'];
-            let scaleY = bData['cY'];
-            let rotationX = cc.radiansToDegrees(parseFloat(bData['kX']));
-            let rotationY = cc.radiansToDegrees(parseFloat(bData['kY']));
             // Layer info
             let layerInfo = {
                 name: name,
-                x: x,
-                y: y,
-                scaleX: scaleX,
-                scaleY: scaleY,
-                rotationX: rotationX,
-                rotationY: rotationY,
+                x: bData['x'],
+                y: bData['y'],
+                scaleX: bData['cX'],
+                scaleY: bData['cY'],
+                skewX: parseFloat(bData['kY']),
+                skewY: parseFloat(bData['kY']),
+                rotationX: cc.radiansToDegrees(parseFloat(bData['kX'])),
+                rotationY: cc.radiansToDegrees(-parseFloat(bData['kY'])),
                 defaultSpriteFrame: null,
             };
             LayerList[name] = layerInfo;
@@ -149,23 +145,17 @@ function _decodeBone (bone_data, cb) {
     );
 }
 
-function _addPropFrames (idx, frame, value, propFrams) {
+function _addPropFrames (idx, frame, value, propFrams, tweenFrame) {
     let tempValue = value;
     if (typeof value === 'function') {
         tempValue = value();
     }
-
-    if (idx === 0) {
-        propFrams[idx] = {
-            frame: frame,
-            value: tempValue || 0
-        }
-    }
-    else if (tempValue || tempValue > 0) {
-        propFrams[idx] = {
-            frame: frame,
-            value: tempValue || 0
-        }
+    propFrams[idx] = {
+        frame: frame,
+        value: tempValue || 0
+    };
+    if (!tweenFrame) {
+        propFrams[idx].curve = "constant";
     }
 }
 
@@ -183,9 +173,12 @@ function _decodeFrameData (mov_bone_data, sample, layerInfo, cb) {
     let props = {};
     let xFrames = [];
     let yFrames = [];
-    let rotations = [];
+    let rotationXs = [];
+    let rotationYs = [];
     let scaleXs = [];
     let scaleYs = [];
+    let skewXs = [];
+    let skewYs = [];
     for (let i = 0, l = frame_data.length; i < l; i++) {
         let data = frame_data[i];
         let frame = (data['fi'] / sample);
@@ -196,17 +189,26 @@ function _decodeFrameData (mov_bone_data, sample, layerInfo, cb) {
             frame: frame,
             value: _getSpriteFrameByDisplayIndex(name, data['dI']),
         };
+        if (!tweenFrame) {
+            frames[i].curve = "constant";
+        }
         let x = data['x'] + layerInfo.x;
-        _addPropFrames(i, frame, x, xFrames);
+        _addPropFrames(i, frame, x, xFrames, tweenFrame);
         let y = data['y'] + layerInfo.y;
-        _addPropFrames(i, frame, y, yFrames);
+        _addPropFrames(i, frame, y, yFrames, tweenFrame);
         let cX = data['cX'] * layerInfo.scaleX;
-        _addPropFrames(i, frame, cX, scaleXs);
+        _addPropFrames(i, frame, cX, scaleXs, tweenFrame);
         let cY = data['cY'] * layerInfo.scaleY;
-        _addPropFrames(i, frame, cY, scaleYs);
+        _addPropFrames(i, frame, cY, scaleYs, tweenFrame);
+        let rotationX = cc.radiansToDegrees(parseFloat(data['kX']));
+        _addPropFrames(i, frame, rotationX, rotationXs, tweenFrame);
+        let rotationY = cc.radiansToDegrees(-parseFloat(data['kY']));
+        _addPropFrames(i, frame, rotationY, rotationYs, tweenFrame);
+        // let skewX = parseFloat(data['kX']) + layerInfo.skewX;
+        // _addPropFrames(i, frame, skewX, skewXs, tweenFrame);
+        // let skewY = parseFloat(data['kY']) + layerInfo.skewY;
+        // _addPropFrames(i, frame, skewY, skewYs, tweenFrame);
 
-        let rotation = cc.radiansToDegrees(parseFloat(data['kX']));
-        _addPropFrames(i, frame, rotation, rotations);
         let tempColor = data['color'];
         if (tempColor) {
             // color
@@ -247,8 +249,20 @@ function _decodeFrameData (mov_bone_data, sample, layerInfo, cb) {
     if (Object.keys(scaleYs).length > 1) {
         props.scaleY = scaleYs;
     }
-    if (Object.keys(rotations).length > 1) {
-        props.rotation = rotations;
+    if (Object.keys(rotationXs).length > 1) {
+        props.rotationX = rotationXs;
+    }
+    if (Object.keys(rotationYs).length > 1) {
+        props.rotationY = rotationYs;
+    }
+    // if (Object.keys(skewXs).length > 1) {
+    //     props.skewX = skewXs;
+    // }
+    // if (Object.keys(skewYs).length > 1) {
+    //     props.skewY = skewYs;
+    // }
+    if (Object.keys(opacitys).length > 1) {
+        props.opacity = opacitys;
     }
     if (Object.keys(colors).length > 1) {
         props.color = colors;
@@ -622,7 +636,11 @@ function _imports (exportJsonData, destPath, callback) {
                 let childNode = new cc.Node(layer.name);
                 childNode.setPosition(layer.x, layer.y);
                 childNode.setScale(layer.scaleX, layer.scaleY);
-                childNode.setRotation(layer.rotationX);
+                childNode.setScale(layer.scaleX, layer.scaleY);
+                // childNode.setSkewX(layer.skewX);
+                // childNode.setSkewY(layer.skewY);
+                childNode.setRotationX(layer.rotationX);
+                childNode.setRotationY(layer.rotationY);
                 let spriteComp = childNode.addComponent(cc.Sprite);
                 if (layer.defaultSpriteFrame) {
                     spriteComp.spriteFrame = layer.defaultSpriteFrame;
