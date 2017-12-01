@@ -67,14 +67,32 @@ function _initScrArr (items) {
     }
 }
 
-function _getSpriteFrameByDisplayIndex (name, displayIndx) {
-    let url = DISPLAY_DATA[name][displayIndx];
+function _getSpriteFrameByDisplayIndex (name, displayIndex) {
+    let url = DISPLAY_DATA[name][displayIndex];
     let uuid = SPRITEFRAME_ATLAS[url];
     if (uuid) {
         return Editor.serialize.asAsset(uuid);
     }
     cc.warn('texture：' + url + ' does not exist.');
     return null;
+}
+
+function _loadSpriteFrameByDisplayIndex (name, displayIndex, cb) {
+    let url = DISPLAY_DATA[name][displayIndex];
+    let uuid = SPRITEFRAME_ATLAS[url];
+    if (uuid) {
+        cc.AssetLibrary.loadAsset(uuid, (err, spriteFrame) => {
+            if (err) {
+                Editor.error(err);
+                cb(err, null);
+                return;
+            }
+            cb(null, spriteFrame);
+        });
+    }
+    else {
+        cb('texture：' + url + ' does not exist.', null);
+    }
 }
 
 function _decodeDisplayData (name, display_data, layerInfo, cb) {
@@ -86,17 +104,6 @@ function _decodeDisplayData (name, display_data, layerInfo, cb) {
             // display name;
             let dpName = data['name'];
             DISPLAY_DATA[name].push(dpName);
-            let uuid = SPRITEFRAME_ATLAS[dpName];
-            if (uuid) {
-                cc.AssetLibrary.loadAsset(uuid, (err, spriteFrame) => {
-                    if (err) {
-                        Editor.error(err);
-                    }
-                    else {
-                        layerInfo.defaultSpriteFrame = spriteFrame;
-                    }
-                });
-            }
             if (i === len - 1) {
                 cb();
             }
@@ -136,7 +143,16 @@ function _decodeBone (bone_data, cb) {
             }
             _decodeDisplayData(name, display_data, layerInfo, () => {
                 index++;
-                whileCb();
+                let displayIndex = bData['dI'];
+                if (displayIndex !== -1) {
+                    _loadSpriteFrameByDisplayIndex(name, displayIndex, (err, spriteFrame) =>{
+                        layerInfo.defaultSpriteFrame = spriteFrame;
+                        whileCb();
+                    });
+                }
+                else {
+                    whileCb();
+                }
             });
         },
         function () {
