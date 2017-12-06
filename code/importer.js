@@ -648,7 +648,7 @@ function _imports (exportJsonData, destPath, callback) {
             let rootNode = new cc.Node(PREFAB_NAME);
             let animComp = rootNode.addComponent(cc.Animation);
             let keys = Object.keys(LayerList);
-            for (let i = keys.length - 1; i > 0; --i) {
+            for (let i = keys.length - 1; i >= 0; --i) {
                 let key = keys[i];
                 let layer = LayerList[key];
                 let childNode = new cc.Node(layer.name);
