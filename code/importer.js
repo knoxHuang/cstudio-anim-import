@@ -181,7 +181,7 @@ function _canAddProps (frames, defaultValueOrCheckFunc = 0) {
     if (typeof defaultValueOrCheckFunc === 'function') {
         return (len === 1 && defaultValueOrCheckFunc()) || len > 1;
     }
-    return (len === 1 && frames[0].value !== defaultValueOrCheckFunc) || len > 1;
+    return (len === 1 && (frames[0] && frames[0].value !== defaultValueOrCheckFunc) || len > 1;
 }
 
 function _decodeFrameData (mov_bone_data, sample, layerInfo, cb) {
