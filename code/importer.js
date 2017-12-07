@@ -290,7 +290,7 @@ function _decodeFrameData (mov_bone_data, sample, layerInfo, cb) {
         props.opacity = opacitys;
     }
     if (_canAddProps(colors, () => {
-            return !colors[0].value.equals(cc.Color.WHITE);
+            return (colors[0] && !colors[0].value.equals(cc.Color.WHITE));
         })) {
         props.color = colors;
     }
