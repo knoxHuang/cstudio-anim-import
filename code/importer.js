@@ -175,6 +175,15 @@ function _addPropFrames (idx, frame, value, propFrams, tweenFrame) {
     }
 }
 
+// 第二个参数为默认数值，或者是判断函数
+function _canAddProps (frames, defaultValueOrCheckFunc = 0) {
+    let len = Object.keys(frames).length;
+    if (typeof defaultValueOrCheckFunc === 'function') {
+        return (len === 1 && defaultValueOrCheckFunc()) || len > 1;
+    }
+    return (len === 1 && frames[0].value !== defaultValueOrCheckFunc) || len > 1;
+}
+
 function _decodeFrameData (mov_bone_data, sample, layerInfo, cb) {
     let curve_data = {};
     let name = mov_bone_data['name'];
@@ -253,38 +262,37 @@ function _decodeFrameData (mov_bone_data, sample, layerInfo, cb) {
         }
     }
 
-    if (Object.keys(xFrames).length > 1) {
+    if (_canAddProps(xFrames)) {
         props.x = xFrames;
     }
-    if (Object.keys(yFrames).length > 1) {
+    if (_canAddProps(yFrames)) {
         props.y = yFrames;
     }
-    if (Object.keys(scaleXs).length > 1) {
+    if (_canAddProps(scaleXs, 1)) {
         props.scaleX = scaleXs;
     }
-    if (Object.keys(scaleYs).length > 1) {
+    if (_canAddProps(scaleYs, 1)) {
         props.scaleY = scaleYs;
     }
-    if (Object.keys(rotationXs).length > 1) {
+    if (_canAddProps(rotationXs)) {
         props.rotationX = rotationXs;
     }
-    if (Object.keys(rotationYs).length > 1) {
+    if (_canAddProps(rotationYs)) {
         props.rotationY = rotationYs;
     }
-    // if (Object.keys(skewXs).length > 1) {
+    // if (_canAddProps(skewXs)) {
     //     props.skewX = skewXs;
     // }
-    // if (Object.keys(skewYs).length > 1) {
+    // if (_canAddProps(skewYs)) {
     //     props.skewY = skewYs;
     // }
-    if (Object.keys(opacitys).length > 1) {
+    if (_canAddProps(opacitys, 255)) {
         props.opacity = opacitys;
     }
-    if (Object.keys(colors).length > 1) {
+    if (_canAddProps(colors, () => {
+            return !colors[0].value.equals(cc.Color.WHITE);
+        })) {
         props.color = colors;
-    }
-    if (Object.keys(opacitys).length > 1) {
-        props.opacity = opacitys;
     }
 
     curve_data = {
