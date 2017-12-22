@@ -248,17 +248,13 @@ function _decodeFrameData (mov_bone_data, sample, layerInfo, cb) {
             if (!tweenFrame) {
                 opacitys[i].curve = "constant";
             }
-            hasAddOpacity = true;
         }
         else {
-            if (hasAddOpacity) {
-                hasAddOpacity = false;
-                opacitys[i] = {
-                    frame: frame,
-                    value: 255,
-                    curve: "constant"
-                };
-            }
+            opacitys[i] = {
+                frame: frame,
+                value: 255,
+                curve: "constant"
+            };
         }
     }
 
