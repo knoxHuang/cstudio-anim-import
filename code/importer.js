@@ -225,9 +225,9 @@ function _decodeFrameData (mov_bone_data, sample, layerInfo, cb) {
         _addPropFrames(i, frame, cX, scaleXs, tweenFrame);
         let cY = data['cY'] * layerInfo.scaleY;
         _addPropFrames(i, frame, cY, scaleYs, tweenFrame);
-        let rotationX = cc.radiansToDegrees(parseFloat(data['kX']));
+        let rotationX = cc.radiansToDegrees(parseFloat(data['kX'])) + layerInfo.rotationX;
         _addPropFrames(i, frame, rotationX, rotationXs, tweenFrame);
-        let rotationY = cc.radiansToDegrees(-parseFloat(data['kY']));
+        let rotationY = cc.radiansToDegrees(-parseFloat(data['kY'])) + layerInfo.rotationY;
         _addPropFrames(i, frame, rotationY, rotationYs, tweenFrame);
         // let skewX = parseFloat(data['kX']) + layerInfo.skewX;
         // _addPropFrames(i, frame, skewX, skewXs, tweenFrame);
