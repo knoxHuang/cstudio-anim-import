@@ -68,6 +68,9 @@ function _initScrArr (items) {
 }
 
 function _getSpriteFrameByDisplayIndex (name, displayIndex) {
+    if (displayIndex === -1) {
+        return null;
+    }
     let url = DISPLAY_DATA[name][displayIndex];
     let uuid = SPRITEFRAME_ATLAS[url];
     if (uuid) {
@@ -96,6 +99,10 @@ function _loadSpriteFrameByDisplayIndex (name, displayIndex, cb) {
 }
 
 function _decodeDisplayData (name, display_data, layerInfo, cb) {
+    if (!display_data) {
+        return cb();
+    }
+
     let len = display_data.length;
     if (len > 0) {
         DISPLAY_DATA[name] = [];
@@ -138,9 +145,9 @@ function _decodeBone (bone_data, cb) {
             };
             LayerList[name] = layerInfo;
             let display_data = bData['display_data'];
-            if (!display_data) {
-                return _sendErrorMessage('display_data is null');
-            }
+            // if (!display_data) {
+            //     return _sendErrorMessage('display_data is null');
+            // }
             _decodeDisplayData(name, display_data, layerInfo, () => {
                 index++;
                 let displayIndex = bData['dI'];
