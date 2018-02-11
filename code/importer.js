@@ -324,6 +324,20 @@ function _decodeMovBoneData (mov_data, cb) {
     }
 
     let node_curve_data = {};
+    // 默认先设置 node 隐藏
+    for (let name in LayerList) {
+        node_curve_data[name] = {
+            "props": {
+                "opacity": [
+                    {
+                        "frame": 0,
+                        "value": 0
+                    }
+                ]
+            }
+        }
+    }
+
     animClip.curveData = {
         paths: node_curve_data
     };
