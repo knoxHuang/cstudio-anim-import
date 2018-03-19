@@ -68,7 +68,7 @@ function _initScrArr (items) {
 }
 
 function _getSpriteFrameByDisplayIndex (name, displayIndex) {
-    if (displayIndex === -1) {
+    if (displayIndex < 0) {
         return null;
     }
     let url = DISPLAY_DATA[name][displayIndex];
@@ -76,7 +76,7 @@ function _getSpriteFrameByDisplayIndex (name, displayIndex) {
     if (uuid) {
         return Editor.serialize.asAsset(uuid);
     }
-    cc.warn('texture：' + url + ' does not exist.');
+    cc.warn('texture：' + url + ' does not exist.  displayIndex: ' + displayIndex);
     return null;
 }
 
@@ -151,7 +151,7 @@ function _decodeBone (bone_data, cb) {
             _decodeDisplayData(name, display_data, layerInfo, () => {
                 index++;
                 let displayIndex = bData['dI'];
-                if (displayIndex !== -1) {
+                if (displayIndex && displayIndex !== -1) {
                     _loadSpriteFrameByDisplayIndex(name, displayIndex, (err, spriteFrame) =>{
                         layerInfo.defaultSpriteFrame = spriteFrame;
                         whileCb();
